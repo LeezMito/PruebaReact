@@ -7,21 +7,11 @@ type Props = {
 }
 
 export default function Header({
-  onToggleCompact,
-  onBack,
-  onSave,
-  onSearch,
-  title = 'CRM • Pagos',
+  title = 'Prueba técnica',
 }: Props) {
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault()
-    const q = new FormData(e.currentTarget).get('q')?.toString() ?? ''
-    onSearch?.(q)
-  }
-
   return (
     <header
-      className="grid h-14 grid-cols-[260px_1fr_300px] items-center gap-3 px-4 bg-white shadow-md z-30"
+      className="grid h-14 grid-cols-[230px_1fr_300px] items-center gap-3 px-4 bg-white shadow-md z-30"
       aria-label="Barra superior"
     >
       <div className="flex items-center gap-2 font-bold" aria-label="Identidad del sistema">
@@ -35,8 +25,8 @@ export default function Header({
         <span className="text-slate-800 text-sm md:text-base">{title}</span>
       </div>
 
-      <div className="max-w-[880px] hidden md:block">
-        <form onSubmit={handleSubmit} className="relative w-full max-w-md">
+      <div className="max-w-[1080px] hidden md:block">
+        <form className="relative w-full">
           <span className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none text-slate-400">
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -11,12 +11,12 @@ export default function HomePage() {
         </p>
       </div>
       <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-        <p className="text-slate-600 mb-2">¿Quieres registrar una nuevo registro?</p>
+        <p className="text-slate-600 mb-6">¿Quieres agregar nuevo registro?</p>
         <Link
           to="/create"
-          className="rounded-lg bg-amber-500 px-4 py-2 text-white text-sm font-medium hover:bg-amber-600 mt-1"
+          className="rounded-lg bg-amber-500 px-4 py-2 text-white text-sm font-medium hover:bg-amber-600 mb-3"
         >
-          + Agregar institución
+          + Agregar registro
         </Link>
       </div>
     </div>

@@ -1,11 +1,5 @@
-import { api } from '../../../../shared/api/base'
-import type { CreateFormValues } from '../schema/form'
+//import { api } from '../../../shared/api/base'
 import { CatalogsSchema, type Catalog } from '../schema/catalog'
-
-export async function save(data: CreateFormValues) {
-  const res = await api.post('/reimbursements/exercise', data)
-  return res.data
-}
 
 export async function getCatalog(): Promise<Catalog[]> {
   //const res = await api.get('/catalog/')

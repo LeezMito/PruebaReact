@@ -3,10 +3,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import TextInput from '../../../shared/ui/TextInput'
 import Select from '../../../shared/ui/Select'
 import Button from '../../../shared/ui/Button'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import CatalogList, { type CatalogItem } from '../../../shared/ui/CatalogList'
+import { useQuery } from '@tanstack/react-query'
 import { useMemo, useEffect } from 'react'
-import { CreateForm, type CreateFormValues } from './schema/form'
-import { save, getCatalog } from './api/api'
+import { CreateForm, type CreateFormValues } from '../schema/form'
+import { getCatalog } from '../api/api'
 import Swal from 'sweetalert2'
 
 export default function CreatePage() {
@@ -16,7 +17,7 @@ export default function CreatePage() {
     reset,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<CreateFormValues>({
     resolver: zodResolver(CreateForm),
     defaultValues: {
@@ -35,7 +36,6 @@ export default function CreatePage() {
   })
 
   const pais = watch('pais')
-
   const isMX = (pais ?? '').toUpperCase() === 'MX'
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function CreatePage() {
       setValue('descripcion', '')
     }
   }, [isMX, setValue])
-  
+
   const paisesOptions = useMemo(() => {
     const seen = new Set<string>()
     return (catalog ?? [])
@@ -58,6 +58,7 @@ export default function CreatePage() {
         return true
       })
       .map(item => ({ value: item.paisCode, label: item.paisName }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'es'))
   }, [catalog])
 
   const estadosOptions = useMemo(() => {
@@ -65,94 +66,105 @@ export default function CreatePage() {
     return (catalog ?? [])
       .filter(item => item.paisCode === pais)
       .map(item => ({ value: item.estadoCode, label: item.estadoName }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'es'))
   }, [catalog, pais])
 
-  const mut = useMutation({
-    mutationFn: save,
-    onSuccess: () => reset(),
-  })
+  const countriesItems: CatalogItem[] = useMemo(
+    () => paisesOptions.map(c => ({ id: c.value, name: c.label })),
+    [paisesOptions]
+  )
 
-  const onSubmit = (values: CreateFormValues) => {
+  const onSubmit = () => {
     Swal.fire({
       icon: 'success',
       title: 'Guardado',
       text: 'El formulario se envió correctamente',
       confirmButtonColor: '#f59e0b',
     })
+    reset()
   }
 
   return (
-    <div className="max-w-2xl">
-      <h2 className="mb-4 text-xl font-semibold">Ejercicio</h2>
+    <div className="grid grid-cols-1 lg:grid-cols-[720px_1fr] gap-6">
+      <section id="form-root" className="max-w-2xl">
+        <h2 className="mb-1 text-xl font-semibold">Ejercicio</h2>
+        <p className="mt-1 text-gray-600">Esto es un ejercicio de React, simulando un formulario</p>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-6">
+          <Select
+            label="País*"
+            error={errors.pais?.message}
+            options={paisesOptions}
+            disabled={isLoading}
+            {...register('pais')}
+          />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Select
-          label="País*"
-          error={errors.pais?.message}
-          options={paisesOptions}
-          {...register('pais')}
-        />
+          <Select
+            label="Estado*"
+            error={errors.estado?.message}
+            options={estadosOptions}
+            disabled={!pais}
+            {...register('estado')}
+          />
 
-        <Select
-          label="Estado*"
-          error={errors.estado?.message}
-          options={estadosOptions}
-          disabled={!pais}
-          {...register('estado')}
-        />
+          <TextInput
+            label="Población*"
+            maxLength={30}
+            placeholder="Nombre de la población"
+            error={errors.poblacion?.message}
+            {...register('poblacion')}
+          />
 
-        <TextInput
-          label="Población*"
-          maxLength={30}
-          placeholder="Nombre de la población"
-          error={errors.poblacion?.message}
-          {...register('poblacion')}
-        />
+          {isMX && (
+            <div className="pt-2">
+              <div className="text-md text-slate-500 mb-1">Día feriado</div>
 
-        {isMX && (
-          <div className="pt-2">
-            <div className="text-sm text-slate-500 mb-1">Días feriados</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm mb-1">Fecha (opcional)</label>
+                  <input
+                    type="date"
+                    className="w-full rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 border-slate-300"
+                    {...register('fecha')}
+                  />
+                </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm mb-1">Fecha (opcional)</label>
-                <input
-                  type="date"
-                  className={`w-full rounded border px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400 border-slate-300`}
-                  {...register('fecha')}
+                <TextInput
+                  label="Descripción (opcional)"
+                  maxLength={30}
+                  placeholder="Ej. Día de la Constitución"
+                  error={errors.descripcion?.message}
+                  {...register('descripcion')}
                 />
               </div>
-
-              <TextInput
-                label="Descripción (opcional)"
-                maxLength={30}
-                placeholder="Ej. Día de la Constitución"
-                error={errors.descripcion?.message}
-                {...register('descripcion')}
-              />
             </div>
+          )}
+
+          <TextInput
+            label="Abreviatura (opcional)"
+            maxLength={30}
+            placeholder="Ej. CDMX"
+            error={errors.abreviatura?.message}
+            {...register('abreviatura')}
+          />
+
+          <div className="flex items-center gap-2 pt-2 justify-end">
+            <button type="button" onClick={() => reset()} className="px-4 py-2 border rounded">
+              Limpiar
+            </button>
+            {/* Tu Button simplificado (sin loading) */}
+            <Button type="submit">Guardar</Button>
           </div>
-        )}
-
-        <TextInput
-          label="Abreviatura (opcional)"
-          maxLength={30}
-          placeholder="Ej. CDMX"
-          error={errors.abreviatura?.message}
-          {...register('abreviatura')}
+        </form>
+        
+      </section>
+      <div className="justify-self-end">
+        <CatalogList
+          items={countriesItems}
+          placeholder="Buscar por país…"
+          className="lg:sticky lg:top-6 h-max w-100 justify-end"
         />
-
-        <div className="flex items-center gap-2 pt-2 justify-end">
-          <Button type="submit" loading={isSubmitting || mut.isPending}>
-            Guardar
-          </Button>
-          <button type="button" onClick={() => reset()} className="px-4 py-2 border rounded">
-            Limpiar
-          </button>
-        </div>
-      </form>
+      </div>
+      
     </div>
   )
 }
-
-
