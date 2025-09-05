@@ -7,7 +7,7 @@ const itemCls = ({ isActive }: { isActive: boolean }) =>
 
 export default function Nav({ collapsed = false }: Props) {
   return (
-    <nav className="p-2 text-sm">
+    <nav className="p-2 text-sm h-[calc(100vh-60px)] shadow-md">
       <div className="px-2 py-1 text-slate-500 uppercase tracking-wide text-xs">Menú</div>
       <ul className="space-y-1">
         <li>

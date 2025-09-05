@@ -1,5 +1,3 @@
-import styles from './Header.module.css'
-
 type Props = {
   onToggleCompact?: () => void
   onBack?: () => void
@@ -22,41 +20,47 @@ export default function Header({
   }
 
   return (
-    <header className={styles.appbar} aria-label="Barra superior">
-      <div className={styles.brand} aria-label="Identidad del sistema">
-        <div className={styles.logo} aria-hidden="true" />
-        <span>{title}</span>
+    <header
+      className="grid h-14 grid-cols-[260px_1fr_300px] items-center gap-3 px-4 bg-white shadow-md z-30"
+      aria-label="Barra superior"
+    >
+      <div className="flex items-center gap-2 font-bold" aria-label="Identidad del sistema">
+        <div
+          className="w-7 h-7 rounded-lg"
+          style={{
+            background:
+              'linear-gradient(135deg, #f28c00, #ffce63)',
+          }}
+        />
+        <span className="text-slate-800 text-sm md:text-base">{title}</span>
       </div>
 
-      <div className={styles.search}>
-        <form onSubmit={handleSubmit}>
+      <div className="max-w-[880px] hidden md:block">
+        <form onSubmit={handleSubmit} className="relative w-full max-w-md">
+          <span className="absolute inset-y-0 left-0 flex items-center pl-2 pointer-events-none text-slate-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
+              />
+            </svg>
+          </span>
+
           <input
             name="q"
             aria-label="Búsqueda global"
             placeholder="Buscar clientes, folios, usuarios…"
+            className="w-full h-9 border border-slate-200 rounded-lg pl-9 pr-3 text-sm bg-white focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
         </form>
-      </div>
-
-      <div className={styles.user}>
-        <button
-          className={styles.btn}
-          title="Modo compacto"
-          type="button"
-          onClick={onToggleCompact}
-        >
-          ↕ Compacto
-        </button>
-        <button className={styles.btn} type="button" onClick={onBack}>
-          ⟵ Volver
-        </button>
-        <button
-          className={`${styles.btn} ${styles.primary}`}
-          type="button"
-          onClick={onSave}
-        >
-          💾 Guardar
-        </button>
       </div>
     </header>
   )

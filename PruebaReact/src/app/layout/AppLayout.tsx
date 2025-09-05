@@ -7,16 +7,18 @@ export default function AppLayout() {
   const [open, setOpen] = useState(true)
 
   return (
-    <div className="min-h-screen grid"
+    <div className="h-[calc(100vh-1px)] grid"
          style={{ gridTemplateRows: 'auto 1fr', gridTemplateColumns: open ? '240px 1fr' : '64px 1fr' }}>
-      <header className="col-span-2 border-b">
+      <header className="col-span-2 z-99">
         <Header onToggleNav={() => setOpen(v => !v)} />
       </header>
-      <aside className="border-r overflow-auto">
+      <aside className="shadow-md z-99 ">
         <Nav collapsed={!open} />
       </aside>
-      <main className="overflow-auto p-4">
-        <Outlet />
+      <main className="bg-slate-100/60">
+        <div className="w-[calc(100%-30px)] h-[calc(100vh-100px)] rounded-2xl shadow-gray-200 shadow-md bg-white m-4 p-4">
+          <Outlet />
+        </div>
       </main>
     </div>
   )
